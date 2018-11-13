@@ -104,7 +104,11 @@ public class Methods {
 		return agregada;
 	}
 	public static String[] rotaciones = new String[]{"0","90","180","-90"}; 
-	public static int Juego2(Tablero miTableroActual, Ficha[] fichas,List<Integer> fichasSeleccionadas,int nivelFicha, int rotacionesActuales, int minRotaciones,boolean solucionFinal,boolean solucionParcial,int nivelRama){
+	public static int Juego2(Tablero miTableroActual, Ficha[] fichas,List<Integer> fichasSeleccionadas,
+			int nivelFicha, int rotacionesActuales, int minRotaciones,boolean solucionFinal,
+			boolean solucionParcial,int nivelRama,int[][] tableroSolucion, int rotacionSolucion){
+		
+		
 		System.out.println(); System.out.println();
 		System.out.println("---------------------------------------------------------------------------------------");
 		System.out.println("Ficha Seleccionada NIVEL; "+nivelFicha+" "+nivelRama);
@@ -122,7 +126,17 @@ public class Methods {
 			int cantidadRotaciones = !fichaSeleccionada.esRotable?4:1;
 			System.out.println("************************** WHILE RAMA: "+nivelRama+" FICHA "+nivelFicha+"***************************");
 			boolean fichaEstampada = false;
-			while(!solucionFinal && !solucion && rotacionActual<cantidadRotaciones && rotacionesActuales<minRotaciones && hayFichas) {
+			int rotacionRama = 0;
+			if(solucionFinal) System.out.println("Sale por solucion Final");
+			if(solucion) System.out.println("Sale por solucion 2");
+			if(!(rotacionActual<cantidadRotaciones)) System.out.println("rotacionActual<cantidadRotaciones");
+			if(!(rotacionesActuales<minRotaciones)) System.out.println("rotacionesActuales<minRotaciones");
+			if(!(hayFichas)) System.out.println("no hay fichas");
+			
+			while(!solucionFinal && rotacionActual<cantidadRotaciones 
+					&& rotacionesActuales<minRotaciones && hayFichas) {
+				solucion = false;
+				
 				String rotacion = Methods.rotaciones[rotacionActual];
 				System.out.println("Rotacion: "+rotacion);
 				System.out.println("FICHA ");
@@ -133,14 +147,22 @@ public class Methods {
 				if(fichaEstampada ) {
 					nivelFicha++;
 					System.out.println("ESTAMPE NIVEL FICHA");
-					rotacionesActuales = Juego2(miTableroActual,fichas,fichasSeleccionadas,nivelFicha,rotacionesActuales,minRotaciones,solucionFinal,miTableroActual.estaCompleto(),nivelRama);
+					rotacionRama = Juego2(miTableroActual,fichas,fichasSeleccionadas,
+							nivelFicha,rotacionRama,minRotaciones,solucionFinal,
+							miTableroActual.estaCompleto(),nivelRama,
+							tableroSolucion,rotacionSolucion
+							);
 					solucion = miTableroActual.estaCompleto();
+					
 				}else {
-					rotacionesActuales++;
+					miTableroActual.rotaciones++;
+					rotacionRama++;
 					
 				}
 				solucion = miTableroActual.estaCompleto();
-				
+				if(solucion) {
+					miTableroActual.huboSolucion = true;
+				}
 				
 		
 
@@ -148,9 +170,13 @@ public class Methods {
 					//nivelFicha=0;
 					
 					if(fichaEstampada) {
+						if(rotacionesActuales>0)
 						rotacionesActuales--;
+						if(miTableroActual.rotaciones>0)
+							miTableroActual.rotaciones--;
 						nivelFicha--;
 						miTableroActual.removerFicha();
+						
 					}else {
 						
 					}
@@ -170,13 +196,35 @@ public class Methods {
 				System.out.println();
 				rotacionActual++;
 				nivelRama++;
-			
+				System.out.println("ROTACION RAMA "+rotacionRama+" "+solucion+" "+rotacionesActuales);
+				if(solucion && rotacionRama!=0) {
+					rotacionesActuales = rotacionRama;
+				}
+				//System.out.println("RESET "+miTableroActual.huboSolucion+" act"+rotacionActual+" menor "+cantidadRotaciones);
+
+				if(!solucion && cantidadRotaciones<=rotacionActual) {
+					System.out.println("RESET "+miTableroActual.huboSolucion+" act"+rotacionActual+" menor "+cantidadRotaciones);
+					if(!miTableroActual.huboSolucion) miTableroActual.rotaciones=0;
+				}else {
+					System.out.println("STATUS"+miTableroActual.rotaciones);
+				}
+				
+				if(solucionFinal) System.out.println("Sale por solucion Final");
+				if(!(rotacionActual<cantidadRotaciones)) System.out.println("rotacionActual<cantidadRotaciones");
+				if(!(rotacionesActuales<minRotaciones)) System.out.println("rotacionesActuales<minRotaciones");
+				if(!(hayFichas)) System.out.println("no hay fichas");
+				if(solucion) {
+					miTableroActual.guardarTablero(tableroSolucion);
+					System.out.println("SOLUCION RESETEO"+miTableroActual.rotaciones);
+					if(miTableroActual.rotaciones>=0)
+						rotacionSolucion = miTableroActual.rotaciones+0;
+					miTableroActual.vaciarTablero();
+				}
 			}
 			
-			if(rotacionesActuales<minRotaciones){
+			if(rotacionesActuales<minRotaciones && solucion){
 				minRotaciones = rotacionesActuales;
 			}
-			
 		}else {
 			System.out.println("**************************NO HAY MAS FICHAS************************");
 			System.out.println();
@@ -184,12 +232,13 @@ public class Methods {
 		}
 		
 		System.out.println("NIVEL FICHA: "+nivelFicha+" ROT "+rotacionesActuales+" MIN "+minRotaciones);
-		if(rotacionesActuales<minRotaciones){
+		/*if(rotacionesActuales<minRotaciones ){
 			minRotaciones = rotacionesActuales;
 			return rotacionesActuales;
 		}else {
 			return minRotaciones;
-		}
+		}*/
+		return rotacionesActuales;
 	}
 	
 	private static boolean quedanFichas(Ficha[] fichas, List<Integer> fichasSeleccionadas) {
@@ -198,66 +247,4 @@ public class Methods {
 		return  fichasSeleccionadas.size()>=fichas.length?false:true;
 	}
 
-	public static int Juego(Tablero miTablero, Ficha[] fichas, int nroFicha, int rotacionesActuales, int minRotaciones,boolean estoyCompleto){
-		//Aca elijo la ficha
-		System.out.println();System.out.println("--------------------INIT ---------------------------");
-				System.out.println("ROTACIONES ACTUALES: "+rotacionesActuales+"; MIN ROTACIONES: "+minRotaciones);
-		boolean agregada = false;
-		boolean solucion = false;
-		ArrayList<int[][]> fichaRama = new ArrayList<>();
-		//for(int i = nroFicha; i<fichas.length && !miTablero.estaCompleto(); i++) {
-		
-		for(int i = nroFicha; i<fichas.length && !solucion; i++) {
-			//Aca elijo la rotacion a utilizar
-			Ficha ficha = fichas[i];
-			System.out.println();System.out.println();System.out.println("OBTENGO FICHA  + ROTACION ");
-			
-			//
-			for(String rotacion: ficha.obtenerRotaciones().keySet()) {
-				
-				
-				System.out.println();System.out.println("--------------------INIT ROTACION "+rotacion+"-------------------------");
-				fichas[i].mostrarRotacion(rotacion);
-				//Aca recorro el tablero y chequeo si encuentro un lugar donde podria meter la ficha
-				
-				for(int posFila = 0; posFila<miTablero.obtenerAlto(); posFila++) {
-					for(int posColumna = 0; posColumna<miTablero.obtenerAncho(); posColumna++) {
-						//Aca veo si la pude agregar
-						//System.out.println("Ficha en " + posFila + " " + posColumna);
-						if(miTablero.agregarFicha(fichas[i], posFila, posColumna, rotacion)) {
-							
-							agregada = true;
-							solucion = miTablero.estaCompleto();
-							if(!solucion) {
-								if(rotacion.equals("0")) {
-									System.out.println("Muestro tablero");miTablero.mostrarTablero();
-									System.out.println(); System.out.println();
-									minRotaciones = Juego(miTablero,fichas,nroFicha+1,rotacionesActuales,minRotaciones,solucion);
-								}else {
-									System.out.println("ROTO");
-									minRotaciones = Juego(miTablero,fichas,nroFicha+1,rotacionesActuales+1,minRotaciones,solucion);
-									System.out.println("Muestro tablero");miTablero.mostrarTablero();
-									System.out.println(); System.out.println();
-								}
-								fichaRama.add(ficha.getRotacion(rotacion));
-							}
-						}else {
-							
-						}
-						if(agregada && !solucion)
-							miTablero.removerFicha();
-					}
-				}
-			}
-			
-		}
-		System.out.println("-------------------- FIN  ---------------------------");
-		System.out.println();
-		if(solucion){
-			return (rotacionesActuales<minRotaciones)?rotacionesActuales:minRotaciones;
-		}else {
-			return minRotaciones;
-		}
-		
-	}
 }
