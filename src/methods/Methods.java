@@ -118,8 +118,8 @@ public class Methods {
 			miTablero.mostrarTablero();
 			System.out.println();System.out.println();
 		}
-		//System.out.println("TOTAL FICHAS "+fichas.length+" NROFICHA "+nroFicha+" TCOMPLETO "+miTablero.estaCompleto());
-	   if(nroFicha>=fichas.length && miTablero.estaCompleto()){
+		//System.out.println("TOTAL FICHAS "+fichas.length+" NROFICHA "+nroFicha+" COMPLETO "+miTablero.estaCompleto());
+		if(nroFicha>=fichas.length && miTablero.estaCompleto()){
 		    rotaciones.setHaySolucion(true); //que compare y actualice minRotaciones dentro de la funcion.
 		    return true;
 		  }else if((nroFicha>=fichas.length && !miTablero.estaCompleto()) || (rotaciones.getActuales()>rotaciones.getMinimas())){
@@ -129,12 +129,16 @@ public class Methods {
 			Ficha ficha = fichas[nroFicha];
 			ArrayList<String> rotacionesDeFicha = ficha.getRotaciones();
 		    for(String rotacion: rotacionesDeFicha){
-		    	System.out.println("FICHA "+nroFicha+" rotacion : "+rotacion);
+		    	if(nroFicha==0 || nroFicha==1) 
+		    		System.out.println("FICHA "+nroFicha+" rotacion : "+rotacion);
 		    	ficha.mostrarRotacion(rotacion);
 		    	for(int i=0; i<miTablero.getAlto(); i++){
 		    		for(int j=0; j<miTablero.getAncho(); j++){
 		    			if(miTablero.agregarFicha(ficha, i, j, rotacion)){
-		    				System.out.println("Se agrego ficha");
+		    				System.out.println();System.out.println();
+		    				System.out.println("Se agrego ficha : "+nroFicha);
+		    				ficha.mostrarRotacion(rotacion);
+		    				System.out.println();System.out.println();
 		    				if(rotacion!="0") {
 		    					rotaciones.setActuales(rotaciones.getActuales()+1);
 		    				} 

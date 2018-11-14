@@ -166,7 +166,7 @@ public class Tablero {
 					
 			this.volumen -= ficha.obtenerTamanio();
 			fichas.remove(fichas.size()-1);
-			System.out.println("Saque una ficha en " + posFila + "-" + posColumna);
+			//System.out.println("Saque una ficha en " + posFila + "-" + posColumna);
 		}
 	}
 	

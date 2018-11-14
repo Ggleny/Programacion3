@@ -19,6 +19,8 @@ public class Main {
 		int rotacionesActuales = 0;
 		int rotacionSolucion = 0;
 		infoJuego = Methods.leerArchivoCSV("/home/gleny/facu/git/Programacion3/src/tetris.txt");
+		Rotaciones rotaciones = new Rotaciones();
+
 		if(infoJuego.size()!=0) {
 			miTablero = Methods.obtenerTablero(infoJuego.get(0));
 			fichas = Methods.obtenerFichas(infoJuego.get(0), miTablero.obtenerCantidadFichas());
@@ -28,22 +30,19 @@ public class Main {
 
 			if(Methods.esSolucionable(Methods.obtenerTamanio(miTablero), Methods.obtenerTamanio(fichas))) {
 				Methods.ordenarFichas(fichas);
-				Rotaciones rotaciones = new Rotaciones();
 				/*minRotaciones = Methods.Juego2(miTablero, fichas,fichasSeleccionadas, 
 						0, rotacionesActuales, minRotaciones,false,false,0, tableroSolucion,rotacionSolucion);*/
 				Methods.Puzzle(miTablero, fichas, 0, rotaciones,cantidadDeTablerosCompletados);
+				
 			}
 			if(!miTablero.huboSolucion) {
 				System.out.println("El juego no tiene soluci�n.");
 			}else {
 				System.out.println("El juego se puede resolver con " + rotacionSolucion + " rotaciones. Se completo el tablero: "+cantidadDeTablerosCompletados);
-				for(int i = 0; i<miTablero.alto;i++) {
-					for(int j = 0; j<miTablero.ancho;j++) {
-						System.out.print(tableroSolucion[i][j]);
-						 
-					}
-					System.out.println();
-				}
+				System.out.println("ROTACIONES rotaciones.haySolucion() "+rotaciones.haySolucion()+ "" );
+				System.out.println("ROTACIONES rotaciones.getmininas() "+rotaciones.getMinimas()+ "" );
+				System.out.println("ROTACIONES rotaciones.getActuales() "+rotaciones.getActuales()+ "" );
+
 			}
 			System.out.println("FINAL "+rotacionSolucion+" SOL "+miTablero.huboSolucion);
 		
