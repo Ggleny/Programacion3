@@ -1,6 +1,7 @@
 package Api;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import classes.Ficha;
@@ -30,6 +31,14 @@ public class Main {
 
 			if(Methods.esSolucionable(Methods.obtenerTamanio(miTablero), Methods.obtenerTamanio(fichas))) {
 				Methods.ordenarFichas(fichas);
+				/*for (Ficha is : fichas) {
+						for (String rotacion : is.getRotaciones()) {
+							System.out.println("Rotacion "+rotacion);
+							is.mostrarRotacion(rotacion);
+							System.out.println();
+							System.out.println();
+						}
+				}*/
 				/*minRotaciones = Methods.Juego2(miTablero, fichas,fichasSeleccionadas, 
 						0, rotacionesActuales, minRotaciones,false,false,0, tableroSolucion,rotacionSolucion);*/
 				Methods.Puzzle(miTablero, fichas, 0, rotaciones,cantidadDeTablerosCompletados);
