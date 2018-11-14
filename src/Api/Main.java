@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import classes.Ficha;
+import classes.Rotaciones;
 import classes.Tablero;
 import methods.Methods;
 
@@ -23,15 +24,19 @@ public class Main {
 			fichas = Methods.obtenerFichas(infoJuego.get(0), miTablero.obtenerCantidadFichas());
 			List<Integer> fichasSeleccionadas = new ArrayList<Integer>(); 
 			int[][] tableroSolucion = new int[miTablero.alto][miTablero.ancho];
+			int cantidadDeTablerosCompletados = 0;
+
 			if(Methods.esSolucionable(Methods.obtenerTamanio(miTablero), Methods.obtenerTamanio(fichas))) {
 				Methods.ordenarFichas(fichas);
-				minRotaciones = Methods.Juego2(miTablero, fichas,fichasSeleccionadas, 
-						0, rotacionesActuales, minRotaciones,false,false,0, tableroSolucion,rotacionSolucion);
+				Rotaciones rotaciones = new Rotaciones();
+				/*minRotaciones = Methods.Juego2(miTablero, fichas,fichasSeleccionadas, 
+						0, rotacionesActuales, minRotaciones,false,false,0, tableroSolucion,rotacionSolucion);*/
+				Methods.Puzzle(miTablero, fichas, 0, rotaciones,cantidadDeTablerosCompletados);
 			}
 			if(!miTablero.huboSolucion) {
 				System.out.println("El juego no tiene soluci�n.");
 			}else {
-				System.out.println("El juego se puede resolver con " + rotacionSolucion + " rotaciones.");
+				System.out.println("El juego se puede resolver con " + rotacionSolucion + " rotaciones. Se completo el tablero: "+cantidadDeTablerosCompletados);
 				for(int i = 0; i<miTablero.alto;i++) {
 					for(int j = 0; j<miTablero.ancho;j++) {
 						System.out.print(tableroSolucion[i][j]);

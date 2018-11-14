@@ -5,11 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.sound.midi.Soundbank;
 
 import classes.Ficha;
+import classes.Rotaciones;
 import classes.Tablero;
 
 public class Methods {
@@ -104,6 +106,52 @@ public class Methods {
 		return agregada;
 	}
 	public static String[] rotaciones = new String[]{"0","90","180","-90"}; 
+	
+	
+	public static boolean Puzzle(Tablero miTablero, Ficha[] fichas, int nroFicha, Rotaciones rotaciones,int tablerosCompletos){
+		if(miTablero.estaCompleto()) {
+			miTablero.huboSolucion = true;
+			tablerosCompletos = tablerosCompletos+1;
+			System.out.println();System.out.println();
+			System.out.println();
+			System.out.println("TABLERO COMPLETO ");
+			miTablero.mostrarTablero();
+			System.out.println();System.out.println();
+		}
+		//System.out.println("TOTAL FICHAS "+fichas.length+" NROFICHA "+nroFicha+" TCOMPLETO "+miTablero.estaCompleto());
+	   if(nroFicha>=fichas.length && miTablero.estaCompleto()){
+		    rotaciones.setHaySolucion(true); //que compare y actualice minRotaciones dentro de la funcion.
+		    return true;
+		  }else if((nroFicha>=fichas.length && !miTablero.estaCompleto()) || (rotaciones.getActuales()>rotaciones.getMinimas())){
+		    return false;
+		  }else{
+			System.out.println("NUMERO FICHA "+nroFicha);
+			Ficha ficha = fichas[nroFicha];
+			ArrayList<String> rotacionesDeFicha = ficha.getRotaciones();
+		    for(String rotacion: rotacionesDeFicha){
+		    	System.out.println("FICHA "+nroFicha+" rotacion : "+rotacion);
+		    	ficha.mostrarRotacion(rotacion);
+		    	for(int i=0; i<miTablero.getAlto(); i++){
+		    		for(int j=0; j<miTablero.getAncho(); j++){
+		    			if(miTablero.agregarFicha(ficha, i, j, rotacion)){
+		    				System.out.println("Se agrego ficha");
+		    				if(rotacion!="0") {
+		    					rotaciones.setActuales(rotaciones.getActuales()+1);
+		    				} 
+		    				nroFicha++;
+		    				Puzzle(miTablero, fichas, nroFicha, rotaciones,tablerosCompletos);
+		    				miTablero.quitarFicha(ficha, i, j, rotacion);
+		    				nroFicha--;
+		    				if(rotacion!="0")
+		    					rotaciones.setActuales(rotaciones.getActuales()-1);           
+		    			}
+		    		}
+		    	}
+		    }
+		  }
+		  return rotaciones.haySolucion();
+	}
+	
 	public static int Juego2(Tablero miTableroActual, Ficha[] fichas,List<Integer> fichasSeleccionadas,
 			int nivelFicha, int rotacionesActuales, int minRotaciones,boolean solucionFinal,
 			boolean solucionParcial,int nivelRama,int[][] tableroSolucion, int rotacionSolucion){
