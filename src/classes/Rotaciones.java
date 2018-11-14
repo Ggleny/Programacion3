@@ -30,6 +30,8 @@ public class Rotaciones {
 	}
 
 	public void setHaySolucion(boolean existeSol) {
+		if(existeSol)
+			minRotaciones = (minRotaciones<rotActuales)?minRotaciones:rotActuales;
 		this.existeSol = existeSol;
 	}
 

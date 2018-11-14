@@ -9,8 +9,6 @@ public class Ficha {
 	private int alto;
 	private int ancho;
 	private int tamanio;
-	public boolean esRotable;
-	private ArrayList<String> rotacionesDisponibles;
 	private boolean debug=false;
 	
 	
@@ -19,7 +17,6 @@ public class Ficha {
 		this.alto = alto;
 		this.ancho = ancho;
 		this.rotaciones  = new HashMap<String, int [][] >();
-		this.rotacionesDisponibles = new ArrayList<>();
 		int k = 0;
 		for (int i = 0; i < alto; i++) {
 			for (int j = 0; j < ancho; j++) {
@@ -29,22 +26,11 @@ public class Ficha {
 			}
 		}
 		this.initRotaciones(aux);
-		//this.calcularTamanio();
-		
-		this.esRotable = this.esRotable();
-	}
-	
-	private void calcularTamanio(){
-	// O(n) = n^2
-		// NO SE PUEDE PORQ SE INSTANCIA ANTES EL 0
-		for(int i = 0; i < alto; i++)
-			for(int j = 0; j < ancho; j++)
-				this.tamanio+=this.getRotacion("0")[i][j];
 	}
 	
 	public boolean esRotable(){
 	// O(n) = cte
-		return !(alto==ancho && tamanio==(alto*ancho));
+		return (tamanio!=(alto*ancho));
 	}
 	
 	public void initRotaciones(int[][] matriz){
@@ -53,6 +39,7 @@ public class Ficha {
 		int[][] aux90= new int[ancho][alto];
 		int[][] aux180= new int[alto][ancho];
 		int[][] auxMenos90= new int[ancho][alto];
+		
 		for (int alt = 0; alt < alto; alt++) {
 			for (int anc = 0; anc < ancho; anc++) {
 				aux0[alt][anc]=matriz[alt][anc];
@@ -65,14 +52,9 @@ public class Ficha {
 			System.out.println("ES ROTACLE "+(alto==ancho)+" "+(tamanio==(alto*ancho))+" tamanio "+tamanio+" alto*ancho"+alto+" * "+ancho );
 		
 		rotaciones.put("0", aux0);
-		rotacionesDisponibles.add("0");
-		if(this.esRotable() && this.alto!=this.ancho) {
+		if(!this.esRotable() && this.alto!=this.ancho) {
 			rotaciones.put("90", aux90);
-			rotacionesDisponibles.add("90");
 		}else if(this.esRotable()) {
-			rotacionesDisponibles.add("90");
-			rotacionesDisponibles.add("180");
-			rotacionesDisponibles.add("-90");
 			rotaciones.put("90", aux90);
 			rotaciones.put("180", aux180);
 			rotaciones.put("-90", auxMenos90);
@@ -80,9 +62,6 @@ public class Ficha {
 		if(debug)
 		this.mostrarRotacion("0");
 
-	}
-	public  ArrayList<String> getRotaciones() {
-		return rotacionesDisponibles;
 	}
 	public int getAlto(){
 		return alto;
